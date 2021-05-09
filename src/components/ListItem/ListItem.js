@@ -4,25 +4,26 @@ import styles from './ListItem.module.scss';
 
 class ListItem extends Component {
   render() {
-    const { name, number, onDeleteItem } = this.props;
+    const { name, number, onDeleteItem, id } = this.props;
+    const handleDelete = () => onDeleteItem(id);
+
     return (
       <li>
-      <span className={styles.contact}>
-      {name}:{number}
-      </span>
-      <button
-      onClick={onDeleteItem}
-      type="button"
-      >
-      Delete
-      </button>
-      </li>)
+        <span className={styles.contact}>
+          {name}:{number}
+        </span>
+        <button onClick={handleDelete} type="button">
+          Delete
+        </button>
+      </li>
+    );
     }
 };
 
 ListItem.propTypes = {
   name: PropTypes.string.isRequired,
   number: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
   onDeleteItem: PropTypes.func.isRequired,
 };
 

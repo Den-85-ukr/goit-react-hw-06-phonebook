@@ -1,26 +1,49 @@
 import { Component } from "react";
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+
+import contactActions from "../../redux/contact/contact-actions";
 import styles from './ContactForm.module.scss';
 
 class ContactForm extends Component {
   state = {
-    name: '',
-    number: '',
+    name: "",
+    number: "",
   };
 
-  handleChange = event => {
+  handleChange = (event) => {
     const { name, value } = event.currentTarget;
     this.setState({ [name]: value });
   };
 
-  handleSubmit = event => {
+  findName = (name) => {
+    const { contacts } = this.props;
+    const normalizedName = name.toLowerCase();
+    return contacts.find(
+      (contact) => contact.name.toLowerCase() === normalizedName
+    );
+  };
+
+  handleSubmit = (event) => {
     event.preventDefault();
-    this.props.onSubmit(this.state);
+    const { name } = this.state;
+    const { onSubmit } = this.props;
+
+    const checkName = this.findName(name);
+
+    if (checkName) {
+      alert(`${name} is already in contacts`);
+      this.resetForm();
+      return;
+    }
+
+    onSubmit(this.state);
+
     this.reset();
   };
 
   reset = () => {
-    this.setState({ name: '', number: '' });
+    this.setState({ name: "", number: "" });
   };
 
   render() {
@@ -59,4 +82,12 @@ ContactForm.propTypes = {
   onSubmit: PropTypes.func.isRequired,
 };
 
-export default ContactForm;
+const mapStateToProps = (state) => ({
+  contacts: state.contacts.items,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  onSubmit: (contact) => dispatch(contactActions.addContact(contact)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(ContactForm);
